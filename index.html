@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Untuk Sahabatku ♡</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #030204;
+    color: #ffd9ec;
+    font-family: "Courier New", monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    opacity: 0.48;
+}
+
+.container {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 25px 18px;
+}
+
+.card {
+    width: 100%;
+    max-width: 550px;
+    text-align: center;
+    padding: 30px 22px;
+    border: 1px solid #ff8bc8;
+    border-radius: 18px;
+    background: rgba(15, 4, 15, 0.88);
+    box-shadow: 0 0 18px #ff4da640,
+                inset 0 0 20px #ff4da610;
+    animation: muncul 2s ease;
+}
+
+@keyframes muncul {
+    from {
+        opacity: 0;
+        transform: translateY(25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.small {
+    color: #ff8bc8;
+    font-size: 11px;
+    letter-spacing: 3px;
+    margin-bottom: 18px;
+}
+
+h1 {
+    color: #ff9ed0;
+    font-size: clamp(23px, 6vw, 36px);
+    text-shadow: 0 0 12px #ff4da6;
+    margin-bottom: 12px;
+}
+
+.heart {
+    font-size: 40px;
+    color: #ff69b4;
+    margin: 18px 0;
+    animation: detak 1.3s infinite;
+}
+
+@keyframes detak {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+}
+
+.subtitle {
+    color: #e9a9ce;
+    font-size: 13px;
+    line-height: 1.8;
+    margin-bottom: 25px;
+}
+
+button {
+    padding: 13px 23px;
+    background: transparent;
+    border: 1px solid #ff8bc8;
+    border-radius: 30px;
+    color: #ffc8e5;
+    font-family: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    box-shadow: 0 0 12px #ff4da630;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #ff4da6;
+    color: #16000d;
+    box-shadow: 0 0 25px #ff4da6;
+}
+
+#pesan {
+    display: none;
+    text-align: left;
+    line-height: 1.9;
+    font-size: 13px;
+    margin-top: 28px;
+    color: #f9d7e9;
+    white-space: pre-line;
+}
+
+#pesan h2 {
+    text-align: center;
+    color: #ff91c9;
+    margin-bottom: 18px;
+    text-shadow: 0 0 10px #ff4da6;
+    font-size: 20px;
+}
+
+.penutup {
+    text-align: center;
+    margin-top: 24px;
+    color: #ff8bc8;
+}
+
+.footer {
+    margin-top: 28px;
+    font-size: 10px;
+    color: #b77c9d;
+    letter-spacing: 2px;
+}
+
+.bintang {
+    position: fixed;
+    z-index: 2;
+    pointer-events: none;
+    animation: terbang 4s linear forwards;
+}
+
+@keyframes terbang {
+    from {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-100vh) rotate(360deg);
+    }
+}
+
+@media (max-width: 400px) {
+    .card { padding: 25px 16px; }
+    #pesan { font-size: 12px; }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="hujan"></canvas>
+
+<audio id="musik" loop>
+    <source src="projek4.mp3" type="audio/mpeg">
+</audio>
+
+<div class="container">
+    <div class="card">
+
+        <p class="small">A LITTLE MESSAGE FOR YOU</p>
+
+        <h1>HEY, MY BEST FRIEND ♡</h1>
+
+        <p class="subtitle">
+            for someone who has been part of my story<br>
+            since the first grade of elementary school.
+        </p>
+
+        <div class="heart">♡</div>
+
+        <p class="subtitle">
+            ada sesuatu yang pengen aku sampein ke kamu...
+        </p>
+
+        <button id="tombol" onclick="bukaPesan()">
+            OPEN YOUR MESSAGE ♡
+        </button>
+
+        <div id="pesan">
+            <h2>TO MY FAVORITE PERSON ♡</h2>
+
+            <p id="isi"></p>
+
+            <div class="penutup">
+                <p>thank you for being here.</p>
+                <p>from the first grade until now ♡</p>
+                <br>
+                <p>— your best friend, forever.</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            MADE WITH LOVE & MEMORIES
+        </div>
+
+    </div>
+</div>
+
+<script>
+// EFEK HUJAN KODE PINK
+const canvas = document.getElementById("hujan");
+const ctx = canvas.getContext("2d");
+
+let lebar, tinggi, kolom, tetes;
+const ukuran = 12;
+const simbol = "01 ♡ + * .";
+
+function aturCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    lebar = canvas.width;
+    tinggi = canvas.height;
+    kolom = Math.floor(lebar / ukuran);
+    tetes = Array(kolom).fill(1);
+}
+
+window.addEventListener("resize", aturCanvas);
+aturCanvas();
+
+function hujanKode() {
+    ctx.fillStyle = "rgba(3, 2, 4, 0.12)";
+    ctx.fillRect(0, 0, lebar, tinggi);
+
+    ctx.font = ukuran + "px monospace";
+
+    for (let i = 0; i < tetes.length; i++) {
+        const huruf = simbol[
+            Math.floor(Math.random() * simbol.length)
+        ];
+
+        ctx.fillStyle = Math.random() > 0.7
+            ? "#ffb5dc"
+            : "#71304f";
+
+        ctx.fillText(
+            huruf,
+            i * ukuran,
+            tetes[i] * ukuran
+        );
+
+        if (tetes[i] * ukuran > tinggi &&
+            Math.random() > 0.975) {
+            tetes[i] = 0;
+        }
+
+        tetes[i]++;
+    }
+}
+
+setInterval(hujanKode, 55);
+
+
+// PESAN UNTUK SAHABAT
+const kataKata = `haii, sahabatkuuu ♡
+
+kadang aku mikir, lucu banget yaa...
+kita udah kenal dari kelas 1 SD,
+dari yang dulunya masih kecil,
+belum ngerti banyak hal,
+sampai sekarang kita udah tumbuh sejauh ini.
+
+makasih yaa udah jadi salah satu orang
+yang nemenin perjalanan hidupku.
+makasih buat semua cerita,
+semua tawa, semua kenangan,
+dan semua hal kecil yang mungkin
+kelihatannya biasa aja,
+tapi ternyata berarti banget buat aku.
+
+aku nggak tahu nanti kita bakal sesibuk apa,
+bakal sejauh apa kita melangkah,
+atau bakal sesering apa kita bisa ketemu.
+tapi aku harap, sesibuk apa pun kita nanti,
+kita nggak jadi orang asing, yaa.
+
+aku pengen kita tetap bisa cerita
+tentang hari-hari kita,
+tentang hal random yang bikin ketawa,
+tentang masalah yang bikin capek,
+dan tentang mimpi-mimpi yang pengen kita capai.
+
+terima kasih karena udah jadi bagian
+dari cerita masa kecilku sampai sekarang.
+nggak semua orang beruntung
+bisa punya teman selama ini,
+dan aku bersyukur bisa kenal kamu.
+
+kalau suatu hari nanti kita lihat
+foto-foto lama kita,
+semoga kita bisa senyum sambil bilang,
+"ternyata kita udah sejauh ini, yaa."
+
+semoga kamu selalu bahagia,
+semoga semua hal baik datang ke hidupmu,
+dan semoga kamu nggak pernah lupa
+kalau kamu punya teman
+yang menghargai kehadiranmu.
+
+pokoknya, jangan berubah jadi orang asing,
+yaaa. kita masih punya banyak cerita
+yang belum selesai. ♡`;
+
+let sudahDibuka = false;
+
+function bukaPesan() {
+    if (sudahDibuka) return;
+
+    sudahDibuka = true;
+
+    document.getElementById("pesan").style.display = "block";
+    document.getElementById("tombol").style.display = "none";
+
+    const target = document.getElementById("isi");
+    let i = 0;
+
+    function ketik() {
+        if (i < kataKata.length) {
+            target.textContent += kataKata.charAt(i);
+            i++;
+            setTimeout(ketik, 28);
+        }
+    }
+
+    ketik();
+
+    // HATI TERBANG
+    for (let i = 0; i < 25; i++) {
+        setTimeout(buatBintang, i * 130);
+    }
+}
+
+function buatBintang() {
+    const hati = document.createElement("div");
+    hati.className = "bintang";
+    hati.textContent = ["♡", "♥", "✧", "✦"][
+        Math.floor(Math.random() * 4)
+    ];
+
+    hati.style.left = Math.random() * 100 + "vw";
+    hati.style.top = (50 + Math.random() * 50) + "vh";
+    hati.style.color = "#ff8bc8";
+    hati.style.fontSize = (12 + Math.random() * 20) + "px";
+
+    document.body.appendChild(hati);
+
+    setTimeout(() => hati.remove(), 4000);
+}
+</script>
+
+</body>
+</html>
